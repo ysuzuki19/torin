@@ -19,7 +19,7 @@ impl Context {
     pub fn is_triggered(&self, trigger: annotation::Trigger) -> bool {
         match trigger {
             annotation::Trigger::Date(date) => self.date == date,
-            annotation::Trigger::Feature(feature) => self.features.contains(&feature),
+            annotation::Trigger::Feature(feature) => !self.features.contains(&feature),
         }
     }
 }
