@@ -1,8 +1,6 @@
-use crate::config;
 use crate::engine::file::File;
-use crate::model::Date;
-use crate::model::Feature;
 use crate::prelude::*;
+use crate::{config, model};
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
@@ -23,14 +21,9 @@ pub struct Range {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum Trigger {
-    Feature(Feature),
-    Date(Date),
-}
-
-#[derive(Debug, PartialEq)]
 pub struct Action {
     command: Command,
+    trigger: model::Trigger,
     range: Range,
 }
 
@@ -61,20 +54,21 @@ impl Action {
 
 #[derive(Debug, PartialEq)]
 pub struct Actions {
-    operations: Vec<Action>,
+    actions: Vec<Action>,
 }
 
 impl Actions {
     pub fn parse(lines: &[String]) -> Result<Option<Self>> {
-        let operations: Vec<Action> = lines
+        let actions: Vec<Action> = lines
             .iter()
             .enumerate()
             .filter(|(_, line)| config::annotation::Annotation::is_match(line))
             .map(|(index, line)| {
                 let cfg = config::annotation::Annotation::parse(line)?;
                 match cfg.target {
-                    config::annotation::Target::Begin(_) => Ok(Some(Action {
+                    config::annotation::Target::Begin(trigger) => Ok(Some(Action {
                         command: cfg.command.into(),
+                        trigger,
                         range: Range {
                             begin: index,
                             end: lines
@@ -83,8 +77,9 @@ impl Actions {
                         },
                     })),
                     config::annotation::Target::End => Ok(None),
-                    config::annotation::Target::Neighbor(_) => Ok(Some(Action {
+                    config::annotation::Target::Neighbor(trigger) => Ok(Some(Action {
                         command: cfg.command.into(),
+                        trigger,
                         range: Range {
                             begin: lines
                                 .prev_match(index, |line| line.trim().is_empty())
@@ -115,26 +110,23 @@ impl Actions {
             .flatten()
             .collect();
 
-        if operations.is_empty() {
+        if actions.is_empty() {
             return Ok(None);
         }
-        Ok(Some(Self { operations }))
+        Ok(Some(Self { actions }))
     }
 
-    pub fn prune(self) -> Result<Self> {
-        //TODO
-        // Input {date,features}
-        // Output pruned operations by date and features
-        // e.g.) on `sample.rs`: // - `torin DELETE BEGIN date=2025-10-01` is removed
+    pub fn prune(mut self, ctx: &config::context::Context) -> Result<Self> {
+        self.actions.retain(|a| ctx.is_triggered(&a.trigger));
         Ok(self)
     }
 
     pub fn all(&self, predicates: impl Fn(&Action) -> bool) -> bool {
-        self.operations.iter().all(predicates)
+        self.actions.iter().all(predicates)
     }
 
     pub fn first(&self) -> Result<&Action> {
-        match self.operations.first() {
+        match self.actions.first() {
             Some(op) => Ok(op),
             None => trace!("No operations found"),
         }
@@ -167,6 +159,7 @@ mod tests {
                     ],
                     expected: vec![Action {
                         command: Command::Delete,
+                        trigger: model::Trigger::Feature(model::Feature::from("foo")),
                         range: Range { begin: 3, end: 5 },
                     }],
                 },
@@ -185,6 +178,7 @@ mod tests {
                     ],
                     expected: vec![Action {
                         command: Command::Delete,
+                        trigger: model::Trigger::Feature(model::Feature::from("foo")),
                         range: Range { begin: 4, end: 6 },
                     }],
                 },
@@ -195,7 +189,7 @@ mod tests {
                     assert!(ops.is_none(), "Expected no operations, got: {:?}", ops);
                 } else {
                     assert!(ops.is_some(), "Expected operations, got None");
-                    assert_eq!(ops.unwrap().operations, case.expected);
+                    assert_eq!(ops.unwrap().actions, case.expected);
                 }
             }
             Ok(())

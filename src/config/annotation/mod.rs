@@ -1,16 +1,14 @@
 mod command;
 mod params;
 mod target;
-mod trigger;
 
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-use crate::prelude::*;
+use crate::{model, prelude::*};
 pub use command::Command;
 pub use params::Params;
 pub use target::Target;
-pub use trigger::Trigger;
 
 #[derive(Debug, PartialEq)]
 pub struct Annotation {
@@ -45,7 +43,7 @@ impl Annotation {
             .trim_start_matches("// torin ")
             .least_sized_split::<2>(" ")?;
         let params = Params::try_from(rest)?;
-        let trigger = Option::<Trigger>::try_from(params)?;
+        let trigger = Option::<model::Trigger>::try_from(params)?;
 
         Ok(Self {
             command: command.try_into()?,
@@ -72,7 +70,7 @@ mod tests {
                     input: "// torin DELETE BEGIN feature=foo",
                     expected: Ok(Annotation {
                         command: Command::Delete,
-                        target: Target::Begin(Trigger::Feature(Feature::new("foo"))),
+                        target: Target::Begin(model::Trigger::Feature(Feature::new("foo"))),
                     }),
                 },
                 Case {
@@ -90,14 +88,14 @@ mod tests {
                     input: "// torin DELETE NEIGHBOR feature=bar",
                     expected: Ok(Annotation {
                         command: Command::Delete,
-                        target: Target::Neighbor(Trigger::Feature(Feature::new("bar"))),
+                        target: Target::Neighbor(model::Trigger::Feature(Feature::new("bar"))),
                     }),
                 },
                 Case {
                     input: "// torin DELETE BEGIN date=2023-10-01",
                     expected: Ok(Annotation {
                         command: Command::Delete,
-                        target: Target::Begin(Trigger::Date(Date::new(2023, 10, 1))),
+                        target: Target::Begin(model::Trigger::Date(Date::new(2023, 10, 1))),
                     }),
                 },
             ];

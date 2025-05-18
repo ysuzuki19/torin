@@ -1,18 +1,16 @@
-use crate::prelude::*;
-
-use super::Trigger;
+use crate::{model, prelude::*};
 
 #[derive(Debug, PartialEq)]
 pub enum Target {
-    Begin(Trigger),
+    Begin(model::Trigger),
     End,
-    Neighbor(Trigger),
+    Neighbor(model::Trigger),
 }
 
-impl TryFrom<(&str, Option<Trigger>)> for Target {
+impl TryFrom<(&str, Option<model::Trigger>)> for Target {
     type Error = Error;
 
-    fn try_from((s, trigger): (&str, Option<Trigger>)) -> Result<Self> {
+    fn try_from((s, trigger): (&str, Option<model::Trigger>)) -> Result<Self> {
         match (s, trigger) {
             ("BEGIN", Some(trigger)) => Ok(Self::Begin(trigger)),
             ("BEGIN", None) => trace!("Trigger is required for BEGIN mode"),

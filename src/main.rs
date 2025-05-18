@@ -14,7 +14,7 @@ fn main() {
         let mut f = engine::file::File::load(sample_path)?;
         println!("Loaded file: {:#?}", f);
         while let Some(ops) = action::Actions::parse(f.lines())? {
-            let ops = ops.prune()?;
+            let ops = ops.prune(&ctx)?;
             if ops.all(|o| o.command().is_error()) {
                 println!("All operations are errors, exiting.");
                 break;

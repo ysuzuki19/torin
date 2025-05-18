@@ -1,8 +1,8 @@
 use crate::prelude::*;
 
 pub struct Params {
-    pub(super) feature: Option<String>,
-    pub(super) date: Option<String>,
+    pub feature: Option<String>,
+    pub date: Option<String>,
 }
 
 impl TryFrom<Vec<&str>> for Params {

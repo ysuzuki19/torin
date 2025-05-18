@@ -1,25 +1,23 @@
-use crate::model::{Date, Feature};
-
-use super::annotation;
+use crate::model;
 
 #[derive(Debug, PartialEq)]
 pub struct Context {
-    pub date: Date,
-    features: Vec<Feature>,
+    pub date: model::Date,
+    features: Vec<model::Feature>,
 }
 
 impl Context {
-    pub fn load(features: Vec<impl Into<Feature>>) -> Self {
+    pub fn load(features: Vec<impl Into<model::Feature>>) -> Self {
         Context {
-            date: Date::now(),
+            date: model::Date::now(),
             features: features.into_iter().map(Into::into).collect(),
         }
     }
 
-    pub fn is_triggered(&self, trigger: annotation::Trigger) -> bool {
+    pub fn is_triggered(&self, trigger: &model::Trigger) -> bool {
         match trigger {
-            annotation::Trigger::Date(date) => self.date == date,
-            annotation::Trigger::Feature(feature) => !self.features.contains(&feature),
+            model::Trigger::Date(date) => &self.date <= date,
+            model::Trigger::Feature(feature) => !self.features.contains(feature),
         }
     }
 }
