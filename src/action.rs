@@ -69,21 +69,21 @@ impl Actions {
         let operations: Vec<Action> = lines
             .iter()
             .enumerate()
-            .filter(|(_, line)| config::InCodeConfig::is_match(line))
+            .filter(|(_, line)| config::annotation::Annotation::is_match(line))
             .map(|(index, line)| {
-                let cfg = config::InCodeConfig::parse(line)?;
+                let cfg = config::annotation::Annotation::parse(line)?;
                 match cfg.target {
-                    config::Target::Begin(_) => Ok(Some(Action {
+                    config::annotation::Target::Begin(_) => Ok(Some(Action {
                         command: cfg.command.into(),
                         range: Range {
                             begin: index,
                             end: lines
-                                .next_match(index, config::InCodeConfig::is_target_end)
+                                .next_match(index, config::annotation::Annotation::is_target_end)
                                 .unwrap_or(lines.len() - 1),
                         },
                     })),
-                    config::Target::End => Ok(None),
-                    config::Target::Neighbor(_) => Ok(Some(Action {
+                    config::annotation::Target::End => Ok(None),
+                    config::annotation::Target::Neighbor(_) => Ok(Some(Action {
                         command: cfg.command.into(),
                         range: Range {
                             begin: lines

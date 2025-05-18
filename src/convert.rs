@@ -1,19 +1,22 @@
-use crate::{action, config};
+use crate::{
+    action::{self},
+    config::annotation::*,
+};
 
-impl From<config::Command> for action::Command {
-    fn from(cmd: config::Command) -> Self {
+impl From<Command> for action::Command {
+    fn from(cmd: Command) -> Self {
         match cmd {
-            config::Command::Delete => action::Command::Delete,
-            config::Command::Error => action::Command::Error,
+            Command::Delete => action::Command::Delete,
+            Command::Error => action::Command::Error,
         }
     }
 }
 
-impl From<config::Trigger> for action::Trigger {
-    fn from(trigger: config::Trigger) -> Self {
+impl From<Trigger> for action::Trigger {
+    fn from(trigger: Trigger) -> Self {
         match trigger {
-            config::Trigger::Feature(feature) => action::Trigger::Feature(feature),
-            config::Trigger::Date(date) => action::Trigger::Date(date),
+            Trigger::Feature(f) => action::Trigger::Feature(f),
+            Trigger::Date(d) => action::Trigger::Date(d),
         }
     }
 }
