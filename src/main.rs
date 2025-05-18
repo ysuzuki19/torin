@@ -1,9 +1,9 @@
+mod action;
 mod config;
 mod convert;
 mod engine;
 mod ext;
 mod model;
-mod operation;
 mod prelude;
 
 use localtrace::*;
@@ -16,7 +16,7 @@ fn main() {
         let sample_path = "src/e2e/sample.rs";
         let mut f = engine::file::File::load(sample_path)?;
         println!("Loaded file: {:#?}", f);
-        while let Some(ops) = operation::Operations::parse(f.lines())? {
+        while let Some(ops) = action::Actions::parse(f.lines())? {
             let ops = ops.prune()?;
             if ops.all(|o| o.command().is_error()) {
                 println!("All operations are errors, exiting.");

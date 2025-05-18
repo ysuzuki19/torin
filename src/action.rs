@@ -29,12 +29,12 @@ pub enum Trigger {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Operation {
+pub struct Action {
     command: Command,
     range: Range,
 }
 
-impl Operation {
+impl Action {
     // torin DELETE BEGIN feature=git-init
     // pub fn new(command: Command, begin: usize, end: usize) -> Self {
     //     Self {
@@ -60,20 +60,20 @@ impl Operation {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Operations {
-    operations: Vec<Operation>,
+pub struct Actions {
+    operations: Vec<Action>,
 }
 
-impl Operations {
+impl Actions {
     pub fn parse(lines: &[String]) -> Result<Option<Self>> {
-        let operations: Vec<Operation> = lines
+        let operations: Vec<Action> = lines
             .iter()
             .enumerate()
             .filter(|(_, line)| config::InCodeConfig::is_match(line))
             .map(|(index, line)| {
                 let cfg = config::InCodeConfig::parse(line)?;
                 match cfg.target {
-                    config::Target::Begin(_) => Ok(Some(Operation {
+                    config::Target::Begin(_) => Ok(Some(Action {
                         command: cfg.command.into(),
                         range: Range {
                             begin: index,
@@ -83,7 +83,7 @@ impl Operations {
                         },
                     })),
                     config::Target::End => Ok(None),
-                    config::Target::Neighbor(_) => Ok(Some(Operation {
+                    config::Target::Neighbor(_) => Ok(Some(Action {
                         command: cfg.command.into(),
                         range: Range {
                             begin: lines
@@ -129,11 +129,11 @@ impl Operations {
         Ok(self)
     }
 
-    pub fn all(&self, predicates: impl Fn(&Operation) -> bool) -> bool {
+    pub fn all(&self, predicates: impl Fn(&Action) -> bool) -> bool {
         self.operations.iter().all(predicates)
     }
 
-    pub fn first(&self) -> Result<&Operation> {
+    pub fn first(&self) -> Result<&Action> {
         match self.operations.first() {
             Some(op) => Ok(op),
             None => trace!("No operations found"),
@@ -150,7 +150,7 @@ mod tests {
         testing::with_trace(|| {
             struct Case {
                 lines: Vec<String>,
-                expected: Vec<Operation>,
+                expected: Vec<Action>,
             }
             let cases = [
                 Case {
@@ -165,7 +165,7 @@ mod tests {
                         String::from(""),
                         String::from("hoge"),
                     ],
-                    expected: vec![Operation {
+                    expected: vec![Action {
                         command: Command::Delete,
                         range: Range { begin: 3, end: 5 },
                     }],
@@ -183,14 +183,14 @@ mod tests {
                         String::from("hoge"),
                         String::from(""),
                     ],
-                    expected: vec![Operation {
+                    expected: vec![Action {
                         command: Command::Delete,
                         range: Range { begin: 4, end: 6 },
                     }],
                 },
             ];
             for case in cases {
-                let ops = Operations::parse(&case.lines)?;
+                let ops = Actions::parse(&case.lines)?;
                 if case.expected.is_empty() {
                     assert!(ops.is_none(), "Expected no operations, got: {:?}", ops);
                 } else {
