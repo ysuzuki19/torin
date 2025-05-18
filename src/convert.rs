@@ -1,19 +1,6 @@
 use super::prelude::*;
 
-use crate::{
-    action::{self},
-    config::annotation::*,
-    model,
-};
-
-impl From<Command> for action::Command {
-    fn from(cmd: Command) -> Self {
-        match cmd {
-            Command::Delete => action::Command::Delete,
-            Command::Error => action::Command::Error,
-        }
-    }
-}
+use crate::{config::annotation::*, model};
 
 impl TryFrom<Params> for Option<model::Trigger> {
     type Error = Error;

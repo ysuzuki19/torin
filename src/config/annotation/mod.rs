@@ -1,4 +1,3 @@
-mod command;
 mod params;
 mod target;
 
@@ -6,13 +5,12 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 
 use crate::{model, prelude::*};
-pub use command::Command;
 pub use params::Params;
 pub use target::Target;
 
 #[derive(Debug, PartialEq)]
 pub struct Annotation {
-    pub command: Command,
+    pub command: model::Command,
     pub target: Target,
 }
 
@@ -69,14 +67,14 @@ mod tests {
                 Case {
                     input: "// torin DELETE BEGIN feature=foo",
                     expected: Ok(Annotation {
-                        command: Command::Delete,
+                        command: model::Command::Delete,
                         target: Target::Begin(model::Trigger::Feature(Feature::new("foo"))),
                     }),
                 },
                 Case {
                     input: "// torin ERROR END",
                     expected: Ok(Annotation {
-                        command: Command::Error,
+                        command: model::Command::Error,
                         target: Target::End,
                     }),
                 },
@@ -87,14 +85,14 @@ mod tests {
                 Case {
                     input: "// torin DELETE NEIGHBOR feature=bar",
                     expected: Ok(Annotation {
-                        command: Command::Delete,
+                        command: model::Command::Delete,
                         target: Target::Neighbor(model::Trigger::Feature(Feature::new("bar"))),
                     }),
                 },
                 Case {
                     input: "// torin DELETE BEGIN date=2023-10-01",
                     expected: Ok(Annotation {
-                        command: Command::Delete,
+                        command: model::Command::Delete,
                         target: Target::Begin(model::Trigger::Date(Date::new(2023, 10, 1))),
                     }),
                 },

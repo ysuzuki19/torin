@@ -6,6 +6,12 @@ pub enum Command {
     Error,
 }
 
+impl Command {
+    pub fn is_error(&self) -> bool {
+        matches!(self, Command::Error)
+    }
+}
+
 impl TryFrom<&str> for Command {
     type Error = Error;
 

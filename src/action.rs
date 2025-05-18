@@ -3,18 +3,6 @@ use crate::prelude::*;
 use crate::{config, model};
 
 #[derive(Debug, PartialEq)]
-pub enum Command {
-    Delete,
-    Error,
-}
-
-impl Command {
-    pub fn is_error(&self) -> bool {
-        matches!(self, Command::Error)
-    }
-}
-
-#[derive(Debug, PartialEq)]
 pub struct Range {
     pub begin: usize,
     pub end: usize,
@@ -22,7 +10,7 @@ pub struct Range {
 
 #[derive(Debug, PartialEq)]
 pub struct Action {
-    command: Command,
+    command: model::Command,
     trigger: model::Trigger,
     range: Range,
 }
@@ -37,17 +25,17 @@ impl Action {
     // }
     // torin DELETE END
 
-    pub fn command(&self) -> &Command {
+    pub fn command(&self) -> &model::Command {
         &self.command
     }
 
     pub fn apply(&self, f: &mut File) -> Result<()> {
         match self.command {
-            Command::Delete => {
+            model::Command::Delete => {
                 f.drain(self.range.begin, self.range.end);
                 Ok(())
             }
-            Command::Error => Ok(()),
+            model::Command::Error => Ok(()),
         }
     }
 }
@@ -67,7 +55,7 @@ impl Actions {
                 let cfg = config::annotation::Annotation::parse(line)?;
                 match cfg.target {
                     config::annotation::Target::Begin(trigger) => Ok(Some(Action {
-                        command: cfg.command.into(),
+                        command: cfg.command,
                         trigger,
                         range: Range {
                             begin: index,
@@ -78,7 +66,7 @@ impl Actions {
                     })),
                     config::annotation::Target::End => Ok(None),
                     config::annotation::Target::Neighbor(trigger) => Ok(Some(Action {
-                        command: cfg.command.into(),
+                        command: cfg.command,
                         trigger,
                         range: Range {
                             begin: lines
@@ -158,7 +146,7 @@ mod tests {
                         String::from("hoge"),
                     ],
                     expected: vec![Action {
-                        command: Command::Delete,
+                        command: model::Command::Delete,
                         trigger: model::Trigger::Feature(model::Feature::from("foo")),
                         range: Range { begin: 3, end: 5 },
                     }],
@@ -177,7 +165,7 @@ mod tests {
                         String::from(""),
                     ],
                     expected: vec![Action {
-                        command: Command::Delete,
+                        command: model::Command::Delete,
                         trigger: model::Trigger::Feature(model::Feature::from("foo")),
                         range: Range { begin: 4, end: 6 },
                     }],
