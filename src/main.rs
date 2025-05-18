@@ -13,7 +13,7 @@ fn main() {
     with_trace(|| {
         // std::env::set_var("", value);
         println!("{}", Date::now()?);
-        let sample_path = "sample.rs";
+        let sample_path = "src/e2e/sample.rs";
         let mut f = engine::file::File::load(sample_path)?;
         println!("Loaded file: {:#?}", f);
         while let Some(ops) = operation::Operations::parse(f.lines())? {
@@ -27,7 +27,9 @@ fn main() {
             op.apply(&mut f)?;
             // f.dump(model::DumpDestination::Stdout)?;
             // f.dump(engine::file::Destination::Overwrite)?;
-            f.dump(engine::file::Destination::File("sample.out.rs".to_string()))?;
+            f.dump(engine::file::Destination::File(
+                "src/e2e/sample.rs.expected".to_string(),
+            ))?;
         }
         Ok(())
     })
