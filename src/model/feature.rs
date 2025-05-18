@@ -13,3 +13,12 @@ impl Feature {
         self.0.clone()
     }
 }
+
+impl<S> From<S> for Feature
+where
+    S: AsRef<str>,
+{
+    fn from(feature: S) -> Self {
+        Feature::new(feature)
+    }
+}

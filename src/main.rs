@@ -6,13 +6,10 @@ mod ext;
 mod model;
 mod prelude;
 
-use localtrace::*;
-use model::*;
-
 fn main() {
-    with_trace(|| {
-        // std::env::set_var("", value);
-        println!("{}", Date::now()?);
+    localtrace::with_trace(|| {
+        let ctx = config::context::Context::load(vec!["refactoring"]);
+        println!("{:?}", ctx);
         let sample_path = "src/e2e/sample.rs";
         let mut f = engine::file::File::load(sample_path)?;
         println!("Loaded file: {:#?}", f);

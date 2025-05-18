@@ -1,10 +1,12 @@
+use chrono::Datelike;
+
 use crate::prelude::*;
 
 #[derive(Debug, PartialEq)]
 pub struct Date {
     year: i32,
-    month: i8,
-    day: i8,
+    month: u32,
+    day: u32,
 }
 
 impl std::fmt::Display for Date {
@@ -14,16 +16,17 @@ impl std::fmt::Display for Date {
 }
 
 impl Date {
-    pub fn new(year: i32, month: i8, day: i8) -> Self {
+    pub fn new(year: i32, month: u32, day: u32) -> Self {
         Date { year, month, day }
     }
 
-    pub fn now() -> Result<Self> {
-        Self::try_from(chrono::Local::now().format("%Y-%m-%d").to_string())
+    pub fn now() -> Self {
+        let now = chrono::Local::now();
+        Self::new(now.year(), now.month(), now.day())
     }
 
     #[cfg(test)]
-    pub fn mock(year: i32, month: i8, day: i8) -> Self {
+    pub fn mock(year: i32, month: u32, day: u32) -> Self {
         Date { year, month, day }
     }
 }
@@ -42,9 +45,9 @@ impl TryFrom<&str> for Date {
     fn try_from(value: &str) -> Result<Self> {
         let [year, month, day] = value.sized_split::<3>("-")?;
         Ok(Date {
-            year: year.parse::<i32>()?,
-            month: month.parse::<i8>()?,
-            day: day.parse::<i8>()?,
+            year: year.parse()?,
+            month: month.parse()?,
+            day: day.parse()?,
         })
     }
 }
