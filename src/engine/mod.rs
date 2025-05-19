@@ -30,7 +30,7 @@ impl Engine {
         // 3. apply actions
         // 4. dump file (switch by mode)
         let mut f = file::File::load(&path)?;
-        while let Some(ops) = plan::Actions::parse(f.lines())? {
+        while let Some(ops) = plan::Plans::parse(f.lines())? {
             let ops = ops.prune(&ctx)?;
             if ops.all(|o| o.command().is_error()) {
                 ops.iter().for_each(|op| {

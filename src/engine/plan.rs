@@ -41,13 +41,13 @@ impl Plan {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Actions {
-    actions: Vec<Plan>,
+pub struct Plans {
+    plans: Vec<Plan>,
 }
 
-impl Actions {
+impl Plans {
     pub fn parse(lines: &[String]) -> Result<Option<Self>> {
-        let actions: Vec<Plan> = lines
+        let plans: Vec<Plan> = lines
             .iter()
             .enumerate()
             .filter(|(_, line)| config::annotation::Annotation::is_match(line))
@@ -98,27 +98,27 @@ impl Actions {
             .flatten()
             .collect();
 
-        if actions.is_empty() {
+        if plans.is_empty() {
             return Ok(None);
         }
-        Ok(Some(Self { actions }))
+        Ok(Some(Self { plans }))
     }
 
     pub fn prune(mut self, ctx: &config::context::Context) -> Result<Self> {
-        self.actions.retain(|a| ctx.is_triggered(&a.trigger));
+        self.plans.retain(|a| ctx.is_triggered(&a.trigger));
         Ok(self)
     }
 
     pub fn all(&self, predicates: impl Fn(&Plan) -> bool) -> bool {
-        self.actions.iter().all(predicates)
+        self.plans.iter().all(predicates)
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Plan> {
-        self.actions.iter()
+        self.plans.iter()
     }
 
     pub fn first(&self) -> Result<&Plan> {
-        match self.actions.first() {
+        match self.plans.first() {
             Some(op) => Ok(op),
             None => trace!("No operations found"),
         }
@@ -176,12 +176,12 @@ mod tests {
                 },
             ];
             for case in cases {
-                let ops = Actions::parse(&case.lines)?;
+                let ops = Plans::parse(&case.lines)?;
                 if case.expected.is_empty() {
                     assert!(ops.is_none(), "Expected no operations, got: {:?}", ops);
                 } else {
                     assert!(ops.is_some(), "Expected operations, got None");
-                    assert_eq!(ops.unwrap().actions, case.expected);
+                    assert_eq!(ops.unwrap().plans, case.expected);
                 }
             }
             Ok(())
