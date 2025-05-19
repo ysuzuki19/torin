@@ -7,7 +7,7 @@ use crate::config;
 use crate::prelude::*;
 
 pub struct Engine {
-    _mode: mode::Mode,
+    mode: mode::Mode,
 }
 
 // enum Output {
@@ -20,15 +20,13 @@ pub struct Engine {
 
 impl Engine {
     pub fn new(mode: mode::Mode) -> Self {
-        Engine { _mode: mode }
+        Engine { mode }
     }
 
     pub fn run(&self, ctx: config::context::Context, path: String) -> Result<()> {
         println!("Engine is running!");
-        // 1. load file
-        // 2. parse actions from file
-        // 3. apply actions
-        // 4. dump file (switch by mode)
+        // 1. List all files in the directory
+        // 2. walk through each file
         let mut f = file::File::load(&path)?;
         while let Some(ops) = plan::Plans::parse(f.lines())? {
             let ops = ops.prune(&ctx)?;
@@ -44,8 +42,12 @@ impl Engine {
             op.apply(&mut f)?;
             // f.dump(model::DumpDestination::Stdout)?;
             // f.dump(engine::file::Destination::Overwrite)?;
-            f.dump(file::Destination::File(format!("{}.expected", path)))?;
         }
+        match self.mode {
+            mode::Mode::Plan => f.dump(file::Destination::Stdout)?,
+            // mode::Mode::Apply => f.dump(file::Destination::Overwrite)?,
+            mode::Mode::Apply => f.dump(file::Destination::File(format!("{}.expected", path)))?,
+        };
         Ok(())
     }
 }
