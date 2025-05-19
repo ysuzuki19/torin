@@ -9,13 +9,13 @@ pub struct Range {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Action {
+pub struct Plan {
     command: model::Command,
     trigger: model::Trigger,
     range: Range,
 }
 
-impl Action {
+impl Plan {
     // torin DELETE BEGIN feature=git-init
     // pub fn new(command: Command, begin: usize, end: usize) -> Self {
     //     Self {
@@ -42,19 +42,19 @@ impl Action {
 
 #[derive(Debug, PartialEq)]
 pub struct Actions {
-    actions: Vec<Action>,
+    actions: Vec<Plan>,
 }
 
 impl Actions {
     pub fn parse(lines: &[String]) -> Result<Option<Self>> {
-        let actions: Vec<Action> = lines
+        let actions: Vec<Plan> = lines
             .iter()
             .enumerate()
             .filter(|(_, line)| config::annotation::Annotation::is_match(line))
             .map(|(index, line)| {
                 let cfg = config::annotation::Annotation::parse(line)?;
                 match cfg.target {
-                    model::Target::Begin(trigger) => Ok(Some(Action {
+                    model::Target::Begin(trigger) => Ok(Some(Plan {
                         command: cfg.command,
                         trigger,
                         range: Range {
@@ -65,7 +65,7 @@ impl Actions {
                         },
                     })),
                     model::Target::End => Ok(None),
-                    model::Target::Neighbor(trigger) => Ok(Some(Action {
+                    model::Target::Neighbor(trigger) => Ok(Some(Plan {
                         command: cfg.command,
                         trigger,
                         range: Range {
@@ -109,15 +109,15 @@ impl Actions {
         Ok(self)
     }
 
-    pub fn all(&self, predicates: impl Fn(&Action) -> bool) -> bool {
+    pub fn all(&self, predicates: impl Fn(&Plan) -> bool) -> bool {
         self.actions.iter().all(predicates)
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &Action> {
+    pub fn iter(&self) -> impl Iterator<Item = &Plan> {
         self.actions.iter()
     }
 
-    pub fn first(&self) -> Result<&Action> {
+    pub fn first(&self) -> Result<&Plan> {
         match self.actions.first() {
             Some(op) => Ok(op),
             None => trace!("No operations found"),
@@ -134,7 +134,7 @@ mod tests {
         testing::with_trace(|| {
             struct Case {
                 lines: Vec<String>,
-                expected: Vec<Action>,
+                expected: Vec<Plan>,
             }
             let cases = [
                 Case {
@@ -149,7 +149,7 @@ mod tests {
                         String::from(""),
                         String::from("hoge"),
                     ],
-                    expected: vec![Action {
+                    expected: vec![Plan {
                         command: model::Command::Delete,
                         trigger: model::Trigger::Feature(model::Feature::from("foo")),
                         range: Range { begin: 3, end: 5 },
@@ -168,7 +168,7 @@ mod tests {
                         String::from("hoge"),
                         String::from(""),
                     ],
-                    expected: vec![Action {
+                    expected: vec![Plan {
                         command: model::Command::Delete,
                         trigger: model::Trigger::Feature(model::Feature::from("foo")),
                         range: Range { begin: 4, end: 6 },
