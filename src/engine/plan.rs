@@ -1,4 +1,3 @@
-use crate::engine::file::File;
 use crate::prelude::*;
 use crate::{config, model};
 
@@ -29,14 +28,12 @@ impl Plan {
         &self.command
     }
 
-    pub fn apply(&self, f: &mut File) -> Result<()> {
-        match self.command {
-            model::Command::Delete => {
-                f.drain(self.range.begin, self.range.end);
-                Ok(())
-            }
-            model::Command::Error => Ok(()),
-        }
+    pub fn begin(&self) -> usize {
+        self.range.begin
+    }
+
+    pub fn end(&self) -> usize {
+        self.range.end
     }
 }
 
@@ -118,11 +115,6 @@ impl Plans {
         Ok(Some(Self { plans }))
     }
 
-    pub fn prune(mut self, ctx: &config::context::Context) -> Result<Self> {
-        self.plans.retain(|a| ctx.is_triggered(&a.trigger));
-        Ok(self)
-    }
-
     pub fn all(&self, predicates: impl Fn(&Plan) -> bool) -> bool {
         self.plans.iter().all(predicates)
     }
@@ -135,6 +127,24 @@ impl Plans {
         match self.plans.first() {
             Some(op) => Ok(op),
             None => trace!("No operations found"),
+        }
+    }
+}
+
+pub(super) trait Prune {
+    fn prune(self, ctx: &config::context::Context) -> Result<Self>
+    where
+        Self: Sized;
+}
+
+impl Prune for Option<Plans> {
+    fn prune(self, ctx: &config::context::Context) -> Result<Self> {
+        match self {
+            Some(mut plans) => {
+                plans.plans.retain(|a| ctx.is_triggered(&a.trigger));
+                Ok(Some(plans))
+            }
+            None => Ok(None),
         }
     }
 }

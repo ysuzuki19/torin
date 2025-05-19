@@ -2,8 +2,10 @@ mod file;
 mod mode;
 mod plan;
 pub use mode::Mode;
+use plan::Prune;
 
 use crate::config;
+use crate::model;
 use crate::prelude::*;
 
 pub struct Engine {
@@ -28,20 +30,21 @@ impl Engine {
         // 1. List all files in the directory
         // 2. walk through each file
         let mut f = file::File::load(&path)?;
-        while let Some(ops) = plan::Plans::parse(f.lines())? {
-            let ops = ops.prune(&ctx)?;
-            if ops.all(|o| o.command().is_error()) {
-                ops.iter().for_each(|op| {
-                    println!("{:?}", op);
+        while let Some(plans) = plan::Plans::parse(f.lines())?.prune(&ctx)? {
+            if plans.all(|p| p.command().is_error()) {
+                plans.iter().for_each(|p| {
+                    println!("{:?}", p);
                 });
                 break;
             }
-            let op = ops.first()?;
 
-            println!("Applying operation for {}: {:?}", path, op);
-            op.apply(&mut f)?;
-            // f.dump(model::DumpDestination::Stdout)?;
-            // f.dump(engine::file::Destination::Overwrite)?;
+            let p = plans.first()?;
+            match p.command() {
+                model::Command::Delete => {
+                    f.drain(p.begin(), p.end());
+                }
+                model::Command::Error => {}
+            }
         }
         match self.mode {
             mode::Mode::Plan => f.dump(file::Destination::Stdout)?,
