@@ -9,11 +9,9 @@ pub enum Target {
     Neighbor(Trigger),
 }
 
-impl TryFrom<(&str, Option<Trigger>)> for Target {
-    type Error = Error;
-
-    fn try_from((s, trigger): (&str, Option<Trigger>)) -> Result<Self> {
-        match (s, trigger) {
+impl Target {
+    pub fn new(target_mode: &str, trigger: Option<Trigger>) -> Result<Self> {
+        match (target_mode, trigger) {
             ("BEGIN", Some(trigger)) => Ok(Self::Begin(trigger)),
             ("BEGIN", None) => trace!("Trigger is required for BEGIN mode"),
 

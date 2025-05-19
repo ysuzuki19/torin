@@ -39,11 +39,10 @@ impl Annotation {
             .trim_start_matches("// torin ")
             .least_sized_split::<2>(" ")?;
         let params = Params::try_from(rest)?;
-        let trigger = Option::<model::Trigger>::try_from(params)?;
 
         Ok(Self {
             command: command.try_into()?,
-            target: (target_mode, trigger).try_into()?,
+            target: model::Target::new(target_mode, params.try_into()?)?,
         })
     }
 }
