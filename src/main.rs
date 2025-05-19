@@ -1,4 +1,3 @@
-mod action;
 mod config;
 mod convert;
 mod engine;
@@ -13,7 +12,7 @@ fn main() {
         let sample_path = "src/e2e/sample.rs";
         let mut f = engine::file::File::load(sample_path)?;
         println!("Loaded file: {:#?}", f);
-        while let Some(ops) = action::Actions::parse(f.lines())? {
+        while let Some(ops) = engine::action::Actions::parse(f.lines())? {
             let ops = ops.prune(&ctx)?;
             if ops.all(|o| o.command().is_error()) {
                 println!("All operations are errors, exiting.");
