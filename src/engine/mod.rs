@@ -7,7 +7,7 @@ use crate::config;
 use crate::prelude::*;
 
 pub struct Engine {
-    mode: mode::Mode,
+    _mode: mode::Mode,
 }
 
 // enum Output {
@@ -20,7 +20,7 @@ pub struct Engine {
 
 impl Engine {
     pub fn new(mode: mode::Mode) -> Self {
-        Engine { mode }
+        Engine { _mode: mode }
     }
 
     pub fn run(&self, ctx: config::context::Context, path: String) -> Result<()> {
