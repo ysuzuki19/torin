@@ -6,27 +6,13 @@ mod model;
 mod prelude;
 
 fn main() {
-    localtrace::with_trace(|| {
-        let ctx = config::context::Context::load(vec!["refactoring"]);
-        println!("{:?}", ctx);
-        let sample_path = "src/e2e/sample.rs";
-        let mut f = engine::file::File::load(sample_path)?;
-        println!("Loaded file: {:#?}", f);
-        while let Some(ops) = engine::action::Actions::parse(f.lines())? {
-            let ops = ops.prune(&ctx)?;
-            if ops.all(|o| o.command().is_error()) {
-                println!("All operations are errors, exiting.");
-                break;
-            }
-            let op = ops.first()?;
+    // 1. parse cli arguments
+    // 2. load .torin.yml and additional config files
 
-            op.apply(&mut f)?;
-            // f.dump(model::DumpDestination::Stdout)?;
-            // f.dump(engine::file::Destination::Overwrite)?;
-            f.dump(engine::file::Destination::File(
-                "src/e2e/sample.rs.expected".to_string(),
-            ))?;
-        }
+    localtrace::with_trace(|| {
+        let ctx = config::context::Context::load(vec!["debug"]);
+        let sample_path = "src/e2e/sample.rs".into();
+        engine::Engine::new(engine::Mode::Plan).run(ctx, sample_path)?;
         Ok(())
     })
 }
