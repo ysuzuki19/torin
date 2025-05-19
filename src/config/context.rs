@@ -20,6 +20,13 @@ impl Context {
             model::Trigger::Feature(feature) => !self.features.contains(feature),
         }
     }
+
+    #[cfg(test)]
+    pub fn mock(date: model::Date, features: Vec<impl Into<model::Feature>>) -> Self {
+        let mut ctx = Context::load(features);
+        ctx.date = date;
+        ctx
+    }
 }
 
 #[cfg(test)]
@@ -28,9 +35,11 @@ mod tests {
 
     #[test]
     fn test_context() {
-        let ctx = Context::load(vec!["foo", "bar"]);
+        let ctx = Context::mock(model::Date::mock(2025, 5, 20), vec!["foo", "bar"]);
         assert!(!ctx.is_triggered(&model::Trigger::feature("foo")));
         assert!(ctx.is_triggered(&model::Trigger::feature("baz")));
-        assert!(ctx.is_triggered(&model::Trigger::Date(model::Date::now())));
+        assert!(!ctx.is_triggered(&model::Trigger::Date(model::Date::mock(2025, 5, 19))));
+        assert!(ctx.is_triggered(&model::Trigger::Date(model::Date::mock(2025, 5, 20))));
+        assert!(ctx.is_triggered(&model::Trigger::Date(model::Date::mock(2025, 5, 21))));
     }
 }
