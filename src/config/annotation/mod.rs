@@ -18,17 +18,6 @@ impl Annotation {
         RE.is_match(line)
     }
 
-    pub fn is_target_end<S>(line: &S) -> bool
-    where
-        S: AsRef<str>,
-    {
-        if let Ok(cfg) = Self::parse(line.as_ref()) {
-            matches!(cfg.target, model::Target::End)
-        } else {
-            false
-        }
-    }
-
     pub fn parse(line: &str) -> Result<Self> {
         if !Self::is_match(line) {
             return trace!("Invalid line");

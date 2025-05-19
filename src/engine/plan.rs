@@ -54,16 +54,30 @@ impl Plans {
             .map(|(index, line)| {
                 let cfg = config::annotation::Annotation::parse(line)?;
                 match cfg.target {
-                    model::Target::Begin(trigger) => Ok(Some(Plan {
-                        command: cfg.command,
-                        trigger,
-                        range: Range {
-                            begin: index,
-                            end: lines
-                                .next_match(index, config::annotation::Annotation::is_target_end)
-                                .unwrap_or(lines.len() - 1),
-                        },
-                    })),
+                    model::Target::Begin(trigger) => {
+                        let next_annotation_index = lines
+                            .next_match(index + 1, |line| {
+                                config::annotation::Annotation::is_match(line)
+                            })
+                            .unwrap_or(lines.len() - 1);
+                        let next_annotation =
+                            config::annotation::Annotation::parse(&lines[next_annotation_index])?;
+
+                        let end = match next_annotation.target {
+                            model::Target::Begin(_) => {
+                                return trace!("Nested torin annotation found: {}", line); //TODO: update error message
+                            }
+                            model::Target::Neighbor(_) => {
+                                return trace!("Nested torin annotation found: {}", line); //TODO: update error message
+                            }
+                            model::Target::End => next_annotation_index,
+                        };
+                        Ok(Some(Plan {
+                            command: cfg.command,
+                            trigger,
+                            range: Range { begin: index, end },
+                        }))
+                    }
                     model::Target::End => Ok(None),
                     model::Target::Neighbor(trigger) => Ok(Some(Plan {
                         command: cfg.command,
@@ -153,6 +167,19 @@ mod tests {
                         command: model::Command::Delete,
                         trigger: model::Trigger::Feature(model::Feature::from("foo")),
                         range: Range { begin: 3, end: 5 },
+                    }],
+                },
+                Case {
+                    lines: vec![
+                        String::from("fuga"),
+                        String::from("// torin DELETE BEGIN feature=foo"),
+                        String::from("// torin DELETE END"),
+                        String::from("hoge"),
+                    ],
+                    expected: vec![Plan {
+                        command: model::Command::Delete,
+                        trigger: model::Trigger::Feature(model::Feature::from("foo")),
+                        range: Range { begin: 1, end: 2 },
                     }],
                 },
                 Case {
