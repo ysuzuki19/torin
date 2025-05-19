@@ -4,6 +4,7 @@ use crate::prelude::*;
 pub enum Command {
     Delete,
     Error,
+    // Add UnComment,
 }
 
 impl Command {
