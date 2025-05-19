@@ -21,3 +21,16 @@ impl Context {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_context() {
+        let ctx = Context::load(vec!["foo", "bar"]);
+        assert!(!ctx.is_triggered(&model::Trigger::feature("foo")));
+        assert!(ctx.is_triggered(&model::Trigger::feature("baz")));
+        assert!(ctx.is_triggered(&model::Trigger::Date(model::Date::now())));
+    }
+}

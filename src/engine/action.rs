@@ -113,6 +113,10 @@ impl Actions {
         self.actions.iter().all(predicates)
     }
 
+    pub fn iter(&self) -> impl Iterator<Item = &Action> {
+        self.actions.iter()
+    }
+
     pub fn first(&self) -> Result<&Action> {
         match self.actions.first() {
             Some(op) => Ok(op),
