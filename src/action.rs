@@ -54,7 +54,7 @@ impl Actions {
             .map(|(index, line)| {
                 let cfg = config::annotation::Annotation::parse(line)?;
                 match cfg.target {
-                    config::annotation::Target::Begin(trigger) => Ok(Some(Action {
+                    model::Target::Begin(trigger) => Ok(Some(Action {
                         command: cfg.command,
                         trigger,
                         range: Range {
@@ -64,8 +64,8 @@ impl Actions {
                                 .unwrap_or(lines.len() - 1),
                         },
                     })),
-                    config::annotation::Target::End => Ok(None),
-                    config::annotation::Target::Neighbor(trigger) => Ok(Some(Action {
+                    model::Target::End => Ok(None),
+                    model::Target::Neighbor(trigger) => Ok(Some(Action {
                         command: cfg.command,
                         trigger,
                         range: Range {

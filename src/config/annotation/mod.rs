@@ -1,17 +1,15 @@
 mod params;
-mod target;
 
 use once_cell::sync::Lazy;
 use regex::Regex;
 
 use crate::{model, prelude::*};
 pub use params::Params;
-pub use target::Target;
 
 #[derive(Debug, PartialEq)]
 pub struct Annotation {
     pub command: model::Command,
-    pub target: Target,
+    pub target: model::Target,
 }
 
 static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^\s*// torin ").expect("Invalid regex"));
@@ -25,7 +23,7 @@ impl Annotation {
         S: AsRef<str>,
     {
         if let Ok(cfg) = Self::parse(line.as_ref()) {
-            matches!(cfg.target, Target::End)
+            matches!(cfg.target, model::Target::End)
         } else {
             false
         }
@@ -68,14 +66,14 @@ mod tests {
                     input: "// torin DELETE BEGIN feature=foo",
                     expected: Ok(Annotation {
                         command: model::Command::Delete,
-                        target: Target::Begin(model::Trigger::Feature(Feature::new("foo"))),
+                        target: model::Target::Begin(model::Trigger::Feature(Feature::new("foo"))),
                     }),
                 },
                 Case {
                     input: "// torin ERROR END",
                     expected: Ok(Annotation {
                         command: model::Command::Error,
-                        target: Target::End,
+                        target: model::Target::End,
                     }),
                 },
                 Case {
@@ -86,14 +84,16 @@ mod tests {
                     input: "// torin DELETE NEIGHBOR feature=bar",
                     expected: Ok(Annotation {
                         command: model::Command::Delete,
-                        target: Target::Neighbor(model::Trigger::Feature(Feature::new("bar"))),
+                        target: model::Target::Neighbor(model::Trigger::Feature(Feature::new(
+                            "bar",
+                        ))),
                     }),
                 },
                 Case {
                     input: "// torin DELETE BEGIN date=2023-10-01",
                     expected: Ok(Annotation {
                         command: model::Command::Delete,
-                        target: Target::Begin(model::Trigger::Date(Date::new(2023, 10, 1))),
+                        target: model::Target::Begin(model::Trigger::Date(Date::new(2023, 10, 1))),
                     }),
                 },
             ];
