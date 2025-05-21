@@ -58,7 +58,7 @@ impl fmt::Display for Error {
 
 pub fn with_trace<F>(f: F)
 where
-    F: Fn() -> Result<()>,
+    F: FnOnce() -> Result<()>,
 {
     if let Err(e) = f() {
         eprintln!("{e}");
@@ -69,7 +69,7 @@ where
 pub mod testing {
     pub fn with_trace<F>(f: F)
     where
-        F: Fn() -> super::Result<()>,
+        F: FnOnce() -> super::Result<()>,
     {
         let res = f();
         assert!(
