@@ -20,4 +20,10 @@ pub enum Mode {
     Check,
     /// Apply changes to the file
     Apply,
+    /// Generate completion script
+    Completion {
+        /// The shell to generate the completion script for
+        #[arg(value_enum)]
+        shell: clap_complete::Shell,
+    },
 }

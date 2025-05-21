@@ -20,8 +20,8 @@ pub struct Engine {
 // }
 
 impl Engine {
-    pub fn new(mode: impl Into<mode::Mode>) -> Self {
-        Engine { mode: mode.into() }
+    pub fn new(mode: mode::Mode) -> Self {
+        Engine { mode }
     }
 
     pub fn run(&self, ctx: config::context::Context, path: String) -> Result<()> {
