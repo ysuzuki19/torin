@@ -43,11 +43,13 @@ impl fmt::Display for Error {
             let filter = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default();
             for frame in self.backtrace.frames() {
                 for symbol in frame.symbols() {
-                    if let Some(file) = symbol.filename()
-                        && file.to_string_lossy().starts_with(&filter)
-                    {
-                        let lineno = symbol.lineno().unwrap_or_default();
-                        writeln!(f, "- {}:{}", file.display(), lineno)?;
+                    if let Some(file) = symbol.filename() {
+                        {
+                            if file.to_string_lossy().starts_with(&filter) {
+                                let lineno = symbol.lineno().unwrap_or_default();
+                                writeln!(f, "- {}:{}", file.display(), lineno)?;
+                            }
+                        }
                     }
                 }
             }
