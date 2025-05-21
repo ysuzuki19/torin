@@ -1,28 +1,30 @@
 use std::fmt;
 
+use crate::config;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Mode {
     Plan,
+    Check,
     Apply,
-}
-
-impl TryFrom<&str> for Mode {
-    type Error = &'static str;
-
-    fn try_from(s: &str) -> Result<Self, Self::Error> {
-        match s {
-            "plan" => Ok(Mode::Plan),
-            "apply" => Ok(Mode::Apply),
-            _ => Err("Invalid mode, expected 'plan' or 'apply'"),
-        }
-    }
 }
 
 impl fmt::Display for Mode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Mode::Plan => write!(f, "plan"),
-            Mode::Apply => write!(f, "apply"),
+            Self::Plan => write!(f, "plan"),
+            Self::Check => write!(f, "check"),
+            Self::Apply => write!(f, "apply"),
+        }
+    }
+}
+
+impl From<config::cli::Mode> for Mode {
+    fn from(mode: config::cli::Mode) -> Self {
+        match mode {
+            config::cli::Mode::Plan => Mode::Plan,
+            config::cli::Mode::Check => Mode::Check,
+            config::cli::Mode::Apply => Mode::Apply,
         }
     }
 }

@@ -1,7 +1,6 @@
 mod file;
 mod mode;
 mod plan;
-pub use mode::Mode;
 use plan::Prune;
 
 use crate::config;
@@ -21,8 +20,8 @@ pub struct Engine {
 // }
 
 impl Engine {
-    pub fn new(mode: mode::Mode) -> Self {
-        Engine { mode }
+    pub fn new(mode: impl Into<mode::Mode>) -> Self {
+        Engine { mode: mode.into() }
     }
 
     pub fn run(&self, ctx: config::context::Context, path: String) -> Result<()> {
@@ -48,6 +47,9 @@ impl Engine {
         }
         match self.mode {
             mode::Mode::Plan => f.dump(file::Destination::Stdout)?,
+            mode::Mode::Check => {
+                todo!() //TODO: check if any changes or errors are detected
+            }
             // mode::Mode::Apply => f.dump(file::Destination::Overwrite)?,
             mode::Mode::Apply => f.dump(file::Destination::File(format!("{path}.expected")))?,
         };
