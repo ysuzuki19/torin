@@ -215,7 +215,7 @@ mod tests {
             for case in cases {
                 let ops = Plans::parse(&case.lines)?;
                 if case.expected.is_empty() {
-                    assert!(ops.is_none(), "Expected no operations, got: {:?}", ops);
+                    assert!(ops.is_none(), "Expected no operations, got: {ops:?}");
                 } else {
                     assert!(ops.is_some(), "Expected operations, got None");
                     assert_eq!(ops.unwrap().plans, case.expected);

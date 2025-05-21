@@ -33,7 +33,7 @@ impl Engine {
         while let Some(plans) = plan::Plans::parse(f.lines())?.prune(&ctx)? {
             if plans.all(|p| p.command().is_error()) {
                 plans.iter().for_each(|p| {
-                    println!("{:?}", p);
+                    println!("{p:?}");
                 });
                 break;
             }
@@ -49,7 +49,7 @@ impl Engine {
         match self.mode {
             mode::Mode::Plan => f.dump(file::Destination::Stdout)?,
             // mode::Mode::Apply => f.dump(file::Destination::Overwrite)?,
-            mode::Mode::Apply => f.dump(file::Destination::File(format!("{}.expected", path)))?,
+            mode::Mode::Apply => f.dump(file::Destination::File(format!("{path}.expected")))?,
         };
         Ok(())
     }

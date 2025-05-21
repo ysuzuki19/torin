@@ -71,7 +71,7 @@ impl File {
             )?,
 
             (_, Destination::File(path)) => std::fs::write(path, &contents)?,
-            (_, Destination::Stdout) => println!("{}", contents),
+            (_, Destination::Stdout) => println!("{contents}"),
             #[cfg(test)]
             (_, Destination::Noop) => {}
         }
