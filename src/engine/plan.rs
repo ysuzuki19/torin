@@ -15,7 +15,7 @@ pub struct Plan {
 }
 
 impl Plan {
-    // torin DELETE BEGIN feature=git-init
+    // torin DELETE BEGIN rule=git-init
     // pub fn new(command: Command, begin: usize, end: usize) -> Self {
     //     Self {
     //         command,
@@ -166,7 +166,7 @@ mod tests {
                         String::from("fuga"),
                         String::from(""),
                         String::from("hoge"),
-                        String::from("// torin DELETE BEGIN feature=foo"),
+                        String::from("// torin DELETE BEGIN rule=foo"),
                         String::from("some code"),
                         String::from("// torin DELETE END"),
                         String::from("fuga"),
@@ -175,20 +175,20 @@ mod tests {
                     ],
                     expected: vec![Plan {
                         command: model::Command::Delete,
-                        trigger: model::Trigger::Feature(model::Feature::from("foo")),
+                        trigger: model::Trigger::Rule(model::Rule::from("foo")),
                         range: Range { begin: 3, end: 5 },
                     }],
                 },
                 Case {
                     lines: vec![
                         String::from("fuga"),
-                        String::from("// torin DELETE BEGIN feature=foo"),
+                        String::from("// torin DELETE BEGIN rule=foo"),
                         String::from("// torin DELETE END"),
                         String::from("hoge"),
                     ],
                     expected: vec![Plan {
                         command: model::Command::Delete,
-                        trigger: model::Trigger::Feature(model::Feature::from("foo")),
+                        trigger: model::Trigger::Rule(model::Rule::from("foo")),
                         range: Range { begin: 1, end: 2 },
                     }],
                 },
@@ -198,7 +198,7 @@ mod tests {
                         String::from(""),
                         String::from("hoge"),
                         String::from(""),
-                        String::from("// torin DELETE NEIGHBOR feature=foo"),
+                        String::from("// torin DELETE NEIGHBOR rule=foo"),
                         String::from("some code"),
                         String::from("fuga"),
                         String::from(""),
@@ -207,7 +207,7 @@ mod tests {
                     ],
                     expected: vec![Plan {
                         command: model::Command::Delete,
-                        trigger: model::Trigger::Feature(model::Feature::from("foo")),
+                        trigger: model::Trigger::Rule(model::Rule::from("foo")),
                         range: Range { begin: 4, end: 6 },
                     }],
                 },

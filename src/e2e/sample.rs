@@ -11,10 +11,10 @@ fn e() {
 // torin DELETE END
 
 // this line is error by following line
-// torin DELETE NEIGHBOR feature=debug
+// torin DELETE NEIGHBOR rule=debug
 fn e2() {
     panic!("This function is not implemented yet");
 }
 // this line is error by above `torin`
 
-// torin ERROR NEIGHBOR feature=debug
+// torin ERROR NEIGHBOR rule=debug

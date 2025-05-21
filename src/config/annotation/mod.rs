@@ -38,7 +38,7 @@ impl Annotation {
 
 #[cfg(test)]
 mod tests {
-    use crate::model::{Date, Feature};
+    use crate::model::{Date, Rule};
 
     use super::*;
 
@@ -51,10 +51,10 @@ mod tests {
             }
             let cases = vec![
                 Case {
-                    input: "// torin DELETE BEGIN feature=foo",
+                    input: "// torin DELETE BEGIN rule=foo",
                     expected: Ok(Annotation {
                         command: model::Command::Delete,
-                        target: model::Target::Begin(model::Trigger::Feature(Feature::new("foo"))),
+                        target: model::Target::Begin(model::Trigger::Rule(Rule::new("foo"))),
                     }),
                 },
                 Case {
@@ -65,16 +65,14 @@ mod tests {
                     }),
                 },
                 Case {
-                    input: "// torin ERROR END feature=foo",
+                    input: "// torin ERROR END rule=foo",
                     expected: Err(()),
                 },
                 Case {
-                    input: "// torin DELETE NEIGHBOR feature=bar",
+                    input: "// torin DELETE NEIGHBOR rule=bar",
                     expected: Ok(Annotation {
                         command: model::Command::Delete,
-                        target: model::Target::Neighbor(model::Trigger::Feature(Feature::new(
-                            "bar",
-                        ))),
+                        target: model::Target::Neighbor(model::Trigger::Rule(Rule::new("bar"))),
                     }),
                 },
                 Case {

@@ -1,4 +1,4 @@
-// torin DELETE NEIGHBOR feature=git-init
+// torin DELETE NEIGHBOR rule=git-init
 // #[cfg(test)]
 // pub mod mock;
 
@@ -14,7 +14,7 @@ pub enum Destination {
     Noop,
 }
 
-// torin DELETE BEGIN feature=git-init
+// torin DELETE BEGIN rule=git-init
 // pub trait FileOps {
 //     fn load(source: String) -> Result<Self>
 //     where

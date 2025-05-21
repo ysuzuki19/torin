@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 pub struct Params {
-    pub feature: Option<String>,
+    pub rule: Option<String>,
     pub date: Option<String>,
 }
 
@@ -10,17 +10,17 @@ impl TryFrom<Vec<&str>> for Params {
 
     fn try_from(parts: Vec<&str>) -> Result<Self> {
         let mut params = Params {
-            feature: None,
+            rule: None,
             date: None,
         };
         for part in parts {
             let [k, v] = part.sized_split::<2>("=")?;
             match k {
-                "feature" => {
-                    if params.feature.is_some() {
-                        trace!("parameter `feature` definition is duplicated")?;
+                "rule" => {
+                    if params.rule.is_some() {
+                        trace!("parameter `rule` definition is duplicated")?;
                     } else {
-                        params.feature = Some(v.to_string());
+                        params.rule = Some(v.to_string());
                     }
                 }
                 "date" => {

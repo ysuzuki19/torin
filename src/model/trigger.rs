@@ -2,12 +2,12 @@ use super::*;
 
 #[derive(Debug, PartialEq)]
 pub enum Trigger {
-    Feature(Feature),
+    Rule(Rule),
     Date(Date),
 }
 
 impl Trigger {
-    pub fn feature(feature: impl Into<Feature>) -> Self {
-        Trigger::Feature(feature.into())
+    pub fn rule(rule: impl Into<Rule>) -> Self {
+        Trigger::Rule(rule.into())
     }
 }
