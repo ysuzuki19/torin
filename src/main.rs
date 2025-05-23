@@ -7,9 +7,12 @@ mod prelude;
 
 use clap::Parser;
 
-fn main() {
+fn cli() -> localtrace::Result<()> {
     let cli = config::cli::Cli::parse();
-    // 2. load .torin.yml and additional config files
+    let manifest = config::manifest::Manifest::load()?;
+    println!("Manifest.project.includes: {:?}", manifest.project.includes);
+    println!("Manifest.project.excludes: {:?}", manifest.project.excludes);
+    println!("Manifest.project.rules: {:?}", manifest.project.rules);
 
     localtrace::with_trace(|| {
         match cli.mode {
@@ -25,5 +28,15 @@ fn main() {
             }
         }
         Ok(())
-    })
+    });
+
+    Ok(())
+}
+
+fn main() {
+    let result = cli();
+    if let Err(e) = result {
+        eprintln!("Error: {e}");
+        std::process::exit(1);
+    }
 }
