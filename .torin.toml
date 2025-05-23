@@ -1,0 +1,4 @@
+[config]
+includes = ["**/*.rs"]
+excludes = ["**/target/**"]
+rules = []
