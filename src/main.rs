@@ -13,6 +13,7 @@ fn cli() -> localtrace::Result<()> {
     println!("Manifest.project.includes: {:?}", manifest.project.includes);
     println!("Manifest.project.excludes: {:?}", manifest.project.excludes);
     println!("Manifest.project.rules: {:?}", manifest.project.rules);
+    println!("Manifest.project.sources: {:?}", manifest.sources()?);
 
     localtrace::with_trace(|| {
         match cli.mode {
