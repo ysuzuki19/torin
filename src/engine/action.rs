@@ -25,7 +25,6 @@ impl Action {
     }
 
     pub fn run(&self, ctx: &config::context::Context, path: &String) -> Result<()> {
-        println!("Action is running!");
         let mut f = file::File::load(path)?;
         while let Some(plans) = plan::Plans::parse(f.lines())?.prune(ctx)? {
             if plans.all(|p| p.command().is_error()) {
