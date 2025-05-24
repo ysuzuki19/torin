@@ -16,7 +16,7 @@ impl Context {
 
     pub fn is_triggered(&self, trigger: &model::Trigger) -> bool {
         match trigger {
-            model::Trigger::Date(date) => &self.date <= date,
+            model::Trigger::Date(date) => date <= &self.date,
             model::Trigger::Rule(rule) => !self.rules.contains(rule),
         }
     }
@@ -38,8 +38,8 @@ mod tests {
         let ctx = Context::mock(model::Date::mock(2025, 5, 20), vec!["foo", "bar"]);
         assert!(!ctx.is_triggered(&model::Trigger::rule("foo")));
         assert!(ctx.is_triggered(&model::Trigger::rule("baz")));
-        assert!(!ctx.is_triggered(&model::Trigger::Date(model::Date::mock(2025, 5, 19))));
+        assert!(ctx.is_triggered(&model::Trigger::Date(model::Date::mock(2025, 5, 19))));
         assert!(ctx.is_triggered(&model::Trigger::Date(model::Date::mock(2025, 5, 20))));
-        assert!(ctx.is_triggered(&model::Trigger::Date(model::Date::mock(2025, 5, 21))));
+        assert!(!ctx.is_triggered(&model::Trigger::Date(model::Date::mock(2025, 5, 21))));
     }
 }
