@@ -1,4 +1,4 @@
 [project]
 includes = ["**/*.rs"]
 excludes = ["**/target/**"]
-rules = []
+rules = ["manifest-execution"]
