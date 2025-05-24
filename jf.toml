@@ -26,3 +26,13 @@ args = ["run"]
 mode = "watch"
 job = "run"
 watch_list = ["src/**/*.rs", "crates/*/src/**/*.rs"]
+
+
+[job.plan]
+command = "cargo"
+args = ["run", "plan"]
+
+[job."plan:live"]
+mode = "watch"
+job = "plan"
+watch_list = ["src/**/*.rs", "crates/*/src/**/*.rs"]
