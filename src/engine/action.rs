@@ -24,12 +24,10 @@ impl Action {
         Action { mode }
     }
 
-    pub fn run(&self, ctx: config::context::Context, path: String) -> Result<()> {
+    pub fn run(&self, ctx: &config::context::Context, path: &String) -> Result<()> {
         println!("Action is running!");
-        // 1. List all files in the directory
-        // 2. walk through each file
-        let mut f = file::File::load(&path)?;
-        while let Some(plans) = plan::Plans::parse(f.lines())?.prune(&ctx)? {
+        let mut f = file::File::load(path)?;
+        while let Some(plans) = plan::Plans::parse(f.lines())?.prune(ctx)? {
             if plans.all(|p| p.command().is_error()) {
                 plans.iter().for_each(|p| {
                     println!("{p:?}");
