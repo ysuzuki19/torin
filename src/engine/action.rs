@@ -49,7 +49,7 @@ impl Action {
                 todo!() //TODO: check if any changes or errors are detected
             }
             // mode::Mode::Apply => f.dump(file::Destination::Overwrite)?,
-            mode::Mode::Apply => f.dump(file::Destination::File(format!("{path}.expected")))?,
+            mode::Mode::Apply => f.dump(file::Destination::File(path.to_owned()))?,
         };
         Ok(())
     }
