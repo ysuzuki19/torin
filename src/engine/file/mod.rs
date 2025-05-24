@@ -1,6 +1,6 @@
-// torin DELETE NEIGHBOR rule=git-init
-// #[cfg(test)]
-// pub mod mock;
+mod lines;
+
+use lines::Lines;
 
 use crate::prelude::*;
 
@@ -28,7 +28,7 @@ pub enum Destination {
 #[derive(Debug, Clone, PartialEq)]
 pub struct File {
     path: Option<String>,
-    lines: Vec<String>,
+    lines: Lines,
 }
 
 impl File {
@@ -37,31 +37,31 @@ impl File {
         S: AsRef<str>,
     {
         let content = std::fs::read_to_string(path.as_ref())?;
-        let lines = content
-            .split('\n')
-            .map(ToString::to_string)
-            .collect::<Vec<_>>();
         Ok(Self {
             path: Some(path.as_ref().to_string()),
-            lines,
+            lines: Lines::from(content),
         })
     }
 
-    pub fn lines(&self) -> &Vec<String> {
-        &self.lines
+    pub fn lines(&self) -> Vec<String> {
+        self.lines.lines()
     }
 
-    pub fn drain(&mut self, begin: usize, end: usize) {
+    pub fn flagging(&mut self, begin: usize, end: usize) {
         let end = if end >= self.lines.len() {
             self.lines.len()
         } else {
             end + 1
         };
-        self.lines.drain(begin..end);
+        self.lines.flagging(lines::Flag::Delete, begin..end);
+    }
+
+    pub fn apply(&mut self) {
+        self.lines.apply();
     }
 
     pub fn dump(&self, dest: Destination) -> Result<String> {
-        let contents = self.lines.join("\n");
+        let contents = self.lines.join();
         match (&self.path, dest) {
             (Some(path), Destination::Overwrite) => {
                 std::fs::write(path, &contents)?;
@@ -82,7 +82,10 @@ impl File {
 impl File {
     #[cfg(test)]
     pub fn mock(lines: Vec<String>) -> Self {
-        Self { path: None, lines }
+        Self {
+            path: None,
+            lines: Lines::from(lines),
+        }
     }
 }
 
@@ -112,7 +115,8 @@ mod tests {
                 let path = relative(case)?;
                 let real = std::fs::read_to_string(&path)?;
                 let f = File::load(path)?;
-                assert_eq!(f.lines.join("\n"), real);
+                let loaded = f.lines.join();
+                assert_eq!(loaded, real);
             }
             Ok(())
         });
@@ -172,8 +176,9 @@ mod tests {
             },
         ] {
             let mut f = f.clone();
-            f.drain(case.start, case.end);
-            assert_eq!(f.lines(), &case.expected, "{}", case.name);
+            f.flagging(case.start, case.end);
+            f.apply();
+            assert_eq!(f.lines(), case.expected, "{}", case.name);
         }
     }
 }
