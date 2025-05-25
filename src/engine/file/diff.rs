@@ -1,3 +1,5 @@
+use crate::model::cutify::*;
+
 pub struct Diff {
     begin: usize,
     end: usize,
@@ -5,13 +7,20 @@ pub struct Diff {
 }
 
 impl Diff {
-    pub fn unified_diff_format(&self) -> String {
+    pub fn unified_diff_format_header(&self) -> String {
         format!(
-            "\x1b[1m@@ -{},{} +{},0 @@\x1b[0m\n\x1b[31m{}\x1b[0m",
+            "@@ -{},{} +{},0 @@",
             self.begin + 1,
             self.end - self.begin,
-            self.begin + 1,
-            self.content
+            self.begin + 1
+        )
+    }
+
+    pub fn unified_diff_format(&self) -> String {
+        format!(
+            "{}\n{}",
+            self.unified_diff_format_header().cutify().bold(),
+            self.content.cutify().red()
         )
     }
 }
@@ -79,7 +88,7 @@ mod tests {
         let unified_diff = diff.unified_diff_format();
         assert_eq!(
             unified_diff,
-            "\x1b[1m@@ -1,2 +1,0 @@\x1b[0m\n\x1b[31m- This is a test line.\n- This is another line.\x1b[0m"
+            "\x1b[1;39m@@ -1,2 +1,0 @@\x1b[0m\n\x1b[31m- This is a test line.\n- This is another line.\x1b[0m"
         );
     }
 }
