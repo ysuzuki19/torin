@@ -17,6 +17,11 @@ args = ["build"]
 mode = "sequential"
 jobs = ["test", "build"]
 
+[job."ci:live"]
+mode = "watch"
+job = "ci"
+watch_list = ["src/**/*.rs", "crates/*/src/**/*.rs"]
+
 [job."test:live"]
 mode = "watch"
 job = "test"
