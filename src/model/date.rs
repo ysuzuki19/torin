@@ -2,7 +2,7 @@ use chrono::Datelike;
 
 use crate::prelude::*;
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct Date {
     year: i32,
     month: u32,

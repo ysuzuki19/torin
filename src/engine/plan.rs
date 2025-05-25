@@ -3,13 +3,13 @@ use crate::{config, model};
 
 use super::context;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Range {
     pub begin: usize,
     pub end: usize,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Plan {
     command: model::Command,
     trigger: model::Trigger,

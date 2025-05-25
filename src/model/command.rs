@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Command {
     Delete,
     Error,

@@ -26,11 +26,10 @@ impl Action {
 
     pub fn run(&self, ctx: &context::Context, path: &String) -> Result<()> {
         let mut f = file::File::load(path)?;
+        let mut errors = Option::<Vec<_>>::None;
         while let Some(plans) = plan::Plans::parse(&f.lines())?.prune(ctx)? {
             if plans.all(|p| p.command().is_error()) {
-                plans.iter().for_each(|p| {
-                    println!("{p:?}");
-                });
+                errors.replace(plans.iter().cloned().collect());
                 break;
             }
 
@@ -49,7 +48,22 @@ impl Action {
                 }
             }
             mode::Mode::Check => {
-                todo!() //TODO: check if any changes or errors are detected
+                let mut succeed = true;
+                if let Some(diff) = f.diff() {
+                    println!("{diff}\n");
+                    succeed = false;
+                }
+
+                if let Some(errors) = errors.take() {
+                    for e in errors {
+                        println!("Error: {e:?}");
+                    }
+                    succeed = false;
+                }
+
+                if !succeed {
+                    return Err(Error::new("Check failed: there are changes to apply"));
+                }
             }
             mode::Mode::Apply => {
                 f.apply();

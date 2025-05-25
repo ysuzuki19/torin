@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Rule(String);
 
 impl Rule {
