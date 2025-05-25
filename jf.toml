@@ -1,6 +1,10 @@
 [meta]
 version = "0.1.0"
 
+[job.install]
+command = "cargo"
+args = ["install", "--path", "."]
+
 [job.test]
 command = "cargo"
 args = ["test"]
