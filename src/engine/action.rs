@@ -42,14 +42,19 @@ impl Action {
                 model::Command::Error => {}
             }
         }
-        f.apply();
         match self.mode {
-            mode::Mode::Plan => f.dump(file::Destination::Stdout)?,
+            mode::Mode::Plan => {
+                if let Some(diff) = f.diff() {
+                    println!("{diff}\n");
+                }
+            }
             mode::Mode::Check => {
                 todo!() //TODO: check if any changes or errors are detected
             }
-            // mode::Mode::Apply => f.dump(file::Destination::Overwrite)?,
-            mode::Mode::Apply => f.dump(file::Destination::File(path.to_owned()))?,
+            mode::Mode::Apply => {
+                f.apply();
+                f.dump(file::Destination::Overwrite)?;
+            }
         };
         Ok(())
     }

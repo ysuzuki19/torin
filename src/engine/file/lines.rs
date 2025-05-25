@@ -1,3 +1,5 @@
+use super::diff::DiffBuilder;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Flag {
     NotChange,
@@ -41,6 +43,40 @@ impl Lines {
             }
             seek_index += 1;
         }
+    }
+
+    pub fn diff(&self) -> Option<String> {
+        let mut diffs = vec![];
+        let mut diff_builder = Option::<DiffBuilder>::None;
+        for (index, (flag, line)) in self.data.iter().enumerate() {
+            match flag {
+                Flag::NotChange => {
+                    if let Some(builder) = diff_builder.take() {
+                        diffs.push(builder.build());
+                    }
+                }
+                Flag::Delete => match diff_builder {
+                    Some(ref mut builder) => {
+                        builder.add(line.clone());
+                    }
+                    None => {
+                        let mut builder = DiffBuilder::new(index);
+                        builder.add(line.clone());
+                        diff_builder = Some(builder);
+                    }
+                },
+            }
+        }
+        if diffs.is_empty() {
+            return None;
+        }
+        Some(
+            diffs
+                .into_iter()
+                .map(|diff| diff.unified_diff_format())
+                .collect::<Vec<_>>()
+                .join("\n"),
+        )
     }
 
     pub fn apply(&mut self) {

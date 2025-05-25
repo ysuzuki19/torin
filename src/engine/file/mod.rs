@@ -1,3 +1,4 @@
+mod diff;
 mod lines;
 
 use lines::Lines;
@@ -5,11 +6,9 @@ use lines::Lines;
 use crate::prelude::*;
 
 pub enum Destination {
-    #[allow(unused)]
     Overwrite,
-    File(String),
     #[allow(unused)]
-    Stdout,
+    File(String),
     #[cfg(test)]
     Noop,
 }
@@ -60,6 +59,10 @@ impl File {
         self.lines.apply();
     }
 
+    pub fn diff(&self) -> Option<String> {
+        self.lines.diff()
+    }
+
     pub fn dump(&self, dest: Destination) -> Result<String> {
         let contents = self.lines.join();
         match (&self.path, dest) {
@@ -71,7 +74,6 @@ impl File {
             )?,
 
             (_, Destination::File(path)) => std::fs::write(path, &contents)?,
-            (_, Destination::Stdout) => println!("{contents}"),
             #[cfg(test)]
             (_, Destination::Noop) => {}
         }
