@@ -7,7 +7,7 @@ pub struct Diff {
 impl Diff {
     pub fn unified_diff_format(&self) -> String {
         format!(
-            "@@ -{},{} +{},0 @@\n{}",
+            "\x1b[1m@@ -{},{} +{},0 @@\x1b[0m\n\x1b[31m{}\x1b[0m",
             self.begin + 1,
             self.end - self.begin,
             self.begin + 1,
@@ -79,7 +79,7 @@ mod tests {
         let unified_diff = diff.unified_diff_format();
         assert_eq!(
             unified_diff,
-            "@@ -1,2 +1,0 @@\n- This is a test line.\n- This is another line."
+            "\x1b[1m@@ -1,2 +1,0 @@\x1b[0m\n\x1b[31m- This is a test line.\n- This is another line.\x1b[0m"
         );
     }
 }
