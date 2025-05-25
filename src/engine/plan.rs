@@ -62,10 +62,12 @@ impl Plans {
 
                         let end = match next_annotation.target {
                             model::Target::Begin(_) => {
-                                return trace!("Nested torin annotation found: {}", line); //TODO: update error message
+                                return trace!("Nested torin annotation found: {}", line);
+                                //TODO: update error message
                             }
                             model::Target::Neighbor(_) => {
-                                return trace!("Nested torin annotation found: {}", line); //TODO: update error message
+                                return trace!("Nested torin annotation found: {}", line);
+                                //TODO: update error message
                             }
                             model::Target::End => next_annotation_index,
                         };

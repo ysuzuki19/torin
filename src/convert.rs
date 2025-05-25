@@ -12,7 +12,8 @@ impl TryFrom<config::annotation::Params> for Option<model::Trigger> {
             (None, Some(date)) => Ok(Some(model::Trigger::Date(model::Date::try_from(date)?))),
             (Some(rule), Some(date)) => trace!(
                 "Only one trigger type is allowed (`rule`={}, `date`={})",
-                rule, date
+                rule,
+                date
             )?,
             (None, None) => Ok(None),
         }
