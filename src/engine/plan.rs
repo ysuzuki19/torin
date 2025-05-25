@@ -17,14 +17,6 @@ pub struct Plan {
 }
 
 impl Plan {
-    // torin DELETE BEGIN rule=git-init
-    // pub fn new(command: Command, begin: usize, end: usize) -> Self {
-    //     Self {
-    //         command,
-    //         range: Range { begin, end },
-    //     }
-    // }
-    // torin DELETE END
 
     pub fn command(&self) -> &model::Command {
         &self.command

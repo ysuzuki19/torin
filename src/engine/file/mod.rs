@@ -13,16 +13,6 @@ pub enum Destination {
     Noop,
 }
 
-// torin DELETE BEGIN rule=git-init
-// pub trait FileOps {
-//     fn load(source: String) -> Result<Self>
-//     where
-//         Self: Sized;
-//     fn lines(&self) -> &Vec<String>;
-//     fn drain(&mut self, begin: usize, end: usize);
-//     fn dump(&self, dest: DumpDestination) -> Result<String>;
-// }
-// torin DELETE END
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct File {

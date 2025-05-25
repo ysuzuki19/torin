@@ -12,14 +12,6 @@ pub struct Action {
     mode: mode::Mode,
 }
 
-// torin DELETE NEIGHBOR rule=today
-// enum Output {
-//     Json,
-//     Stdout,
-// }
-// struct Args {
-//     output: Output,
-// }
 
 impl Action {
     pub fn new(mode: mode::Mode) -> Self {
