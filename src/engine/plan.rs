@@ -1,6 +1,8 @@
 use crate::prelude::*;
 use crate::{config, model};
 
+use super::context;
+
 #[derive(Debug, PartialEq)]
 pub struct Range {
     pub begin: usize,
@@ -134,13 +136,13 @@ impl Plans {
 }
 
 pub(super) trait Prune {
-    fn prune(self, ctx: &config::context::Context) -> Result<Self>
+    fn prune(self, ctx: &context::Context) -> Result<Self>
     where
         Self: Sized;
 }
 
 impl Prune for Option<Plans> {
-    fn prune(self, ctx: &config::context::Context) -> Result<Self> {
+    fn prune(self, ctx: &context::Context) -> Result<Self> {
         match self {
             Some(mut plans) => {
                 plans.plans.retain(|a| ctx.is_triggered(&a.trigger));

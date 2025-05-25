@@ -1,8 +1,8 @@
+use super::context;
 use super::file;
 use super::mode;
 use super::plan;
 use super::plan::Prune;
-use crate::config;
 use crate::model;
 use crate::prelude::*;
 
@@ -24,7 +24,7 @@ impl Action {
         Action { mode }
     }
 
-    pub fn run(&self, ctx: &config::context::Context, path: &String) -> Result<()> {
+    pub fn run(&self, ctx: &context::Context, path: &String) -> Result<()> {
         let mut f = file::File::load(path)?;
         while let Some(plans) = plan::Plans::parse(&f.lines())?.prune(ctx)? {
             if plans.all(|p| p.command().is_error()) {

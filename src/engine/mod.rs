@@ -1,4 +1,5 @@
 pub mod action;
+mod context;
 mod file;
 mod mode;
 mod plan;
@@ -8,7 +9,7 @@ use crate::prelude::*;
 
 pub struct Engine {
     mode: mode::Mode,
-    ctx: config::context::Context,
+    ctx: context::Context,
     sources: Vec<String>,
 }
 
@@ -23,7 +24,7 @@ impl Engine {
         println!("Manifest.project.sources: {:?}", manifest.sources()?);
         // torin DELETE END
         let sources = manifest.sources()?;
-        let ctx = config::context::Context::load(manifest.project.rules);
+        let ctx = context::Context::load(manifest.project.rules);
         Ok(Self { mode, ctx, sources })
     }
 
