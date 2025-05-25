@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 mod macros;
 
-use backtrace::Backtrace;
 use core::fmt;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -10,7 +9,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub struct Error {
     message: String,
     #[cfg(debug_assertions)]
-    backtrace: Backtrace,
+    backtrace: backtrace::Backtrace,
 }
 
 impl Error {
@@ -21,7 +20,7 @@ impl Error {
         Error {
             message: message.as_ref().to_string(),
             #[cfg(debug_assertions)]
-            backtrace: Backtrace::new(),
+            backtrace: backtrace::Backtrace::new(),
         }
     }
 }
