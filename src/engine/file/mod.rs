@@ -13,7 +13,6 @@ pub enum Destination {
     Noop,
 }
 
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct File {
     path: Option<String>,

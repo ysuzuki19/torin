@@ -12,7 +12,6 @@ pub struct Action {
     mode: mode::Mode,
 }
 
-
 impl Action {
     pub fn new(mode: mode::Mode) -> Self {
         Action { mode }

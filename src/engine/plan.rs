@@ -17,7 +17,6 @@ pub struct Plan {
 }
 
 impl Plan {
-
     pub fn command(&self) -> &model::Command {
         &self.command
     }
