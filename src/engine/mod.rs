@@ -3,9 +3,11 @@ mod context;
 mod file;
 mod mode;
 mod plan;
+mod status;
 
 use crate::config;
 use crate::prelude::*;
+pub use status::Status;
 
 pub struct Engine {
     mode: mode::Mode,
@@ -28,10 +30,16 @@ impl Engine {
         Ok(Self { mode, ctx, sources })
     }
 
-    pub fn run(&self) -> Result<()> {
+    pub fn run(&self) -> Result<Status> {
+        let mut status = Status::Success;
         for source in &self.sources {
-            action::Action::new(self.mode).run(&self.ctx, source)?;
+            match action::Action::new(self.mode).run(&self.ctx, source)? {
+                Status::Success => {}
+                Status::Failure => {
+                    status = Status::Failure;
+                }
+            }
         }
-        Ok(())
+        Ok(status)
     }
 }

@@ -3,7 +3,9 @@ use super::file;
 use super::mode;
 use super::plan;
 use super::plan::Prune;
+use super::Status;
 use crate::model;
+use crate::model::cutify::CutifyOps;
 use crate::prelude::*;
 
 pub struct Action {
@@ -24,7 +26,7 @@ impl Action {
         Action { mode }
     }
 
-    pub fn run(&self, ctx: &context::Context, path: &String) -> Result<()> {
+    pub fn run(&self, ctx: &context::Context, path: &String) -> Result<Status> {
         let mut f = file::File::load(path)?;
         let mut errors = Option::<Vec<_>>::None;
         while let Some(plans) = plan::Plans::parse(&f.lines())?.prune(ctx)? {
@@ -43,26 +45,28 @@ impl Action {
         }
         match self.mode {
             mode::Mode::Plan => {
-                if let Some(diff) = f.diff() {
-                    println!("{diff}\n");
+                for diff in f.diffs() {
+                    println!("{}:{}", path.cutify().bold(), diff.lineno());
+                    println!("{}\n", diff.unified_diff_format());
                 }
             }
             mode::Mode::Check => {
                 let mut succeed = true;
-                if let Some(diff) = f.diff() {
-                    println!("{diff}\n");
+                for diff in f.diffs() {
+                    println!("{}:{}", path.cutify().bold(), diff.lineno());
+                    println!("{}\n", diff.unified_diff_format());
                     succeed = false;
                 }
 
                 if let Some(errors) = errors.take() {
-                    for e in errors {
-                        println!("Error: {e:?}");
+                    for p in errors {
+                        println!("check: {}:{}", path.cutify().bold(), p.begin() + 1);
                     }
                     succeed = false;
                 }
 
                 if !succeed {
-                    return Err(Error::new("Check failed: there are changes to apply"));
+                    return Ok(Status::Failure);
                 }
             }
             mode::Mode::Apply => {
@@ -70,6 +74,6 @@ impl Action {
                 f.dump(file::Destination::Overwrite)?;
             }
         };
-        Ok(())
+        Ok(Status::Success)
     }
 }

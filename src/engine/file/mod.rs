@@ -59,8 +59,8 @@ impl File {
         self.lines.apply();
     }
 
-    pub fn diff(&self) -> Option<String> {
-        self.lines.diff()
+    pub fn diffs(&self) -> Vec<diff::Diff> {
+        self.lines.diffs()
     }
 
     pub fn dump(&self, dest: Destination) -> Result<String> {

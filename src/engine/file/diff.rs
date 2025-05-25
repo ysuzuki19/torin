@@ -7,7 +7,11 @@ pub struct Diff {
 }
 
 impl Diff {
-    pub fn unified_diff_format_header(&self) -> String {
+    pub fn lineno(&self) -> usize {
+        self.begin + 1
+    }
+
+    fn unified_diff_format_header(&self) -> String {
         format!(
             "@@ -{},{} +{},0 @@",
             self.begin + 1,

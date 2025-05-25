@@ -1,4 +1,4 @@
-use super::diff::DiffBuilder;
+use super::diff::{Diff, DiffBuilder};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Flag {
@@ -45,7 +45,7 @@ impl Lines {
         }
     }
 
-    pub fn diff(&self) -> Option<String> {
+    pub fn diffs(&self) -> Vec<Diff> {
         let mut diffs = vec![];
         let mut diff_builder = Option::<DiffBuilder>::None;
         for (index, (flag, line)) in self.data.iter().enumerate() {
@@ -67,16 +67,7 @@ impl Lines {
                 },
             }
         }
-        if diffs.is_empty() {
-            return None;
-        }
-        Some(
-            diffs
-                .into_iter()
-                .map(|diff| diff.unified_diff_format())
-                .collect::<Vec<_>>()
-                .join("\n"),
-        )
+        diffs
     }
 
     pub fn apply(&mut self) {
