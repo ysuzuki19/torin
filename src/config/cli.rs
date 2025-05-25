@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 use clap::{Parser, Subcommand};
 
 const AUTHOR: &str = "ysuzuki19";

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 #[macro_export]
 macro_rules! trace {
     ($msg:expr) => {

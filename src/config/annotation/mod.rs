@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 mod params;
 
 use once_cell::sync::Lazy;

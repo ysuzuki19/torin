@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 use glob::glob;
 use globset::{Glob, GlobSetBuilder};
 

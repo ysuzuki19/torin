@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 use super::diff::{Diff, DiffBuilder};
 
 #[derive(Debug, Clone, PartialEq)]

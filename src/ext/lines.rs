@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 pub trait LinesOps {
     fn next_match<F>(&self, index: usize, predicate: F) -> Option<usize>
     where

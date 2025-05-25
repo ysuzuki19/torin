@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 use super::context;
 use super::file;
 use super::mode;

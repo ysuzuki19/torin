@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 use super::prelude::*;
 
 use crate::config;
